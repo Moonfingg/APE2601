@@ -963,7 +963,7 @@ export default function App() {
       {/* Background audio track: Playboi Carti - Location */}
       <audio
         ref={bgAudioRef}
-        src="/valley/audio/ge-ambient.mp3"
+        src={`${import.meta.env.BASE_URL}valley/audio/ge-ambient.mp3`}
         loop
         preload="auto"
       />
