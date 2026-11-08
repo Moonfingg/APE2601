@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>APE2601</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;800&family=Syne:wght@400;600&display=swap">
+<style>
+@property --g{syntax:"<color>";inherits:true;initial-value:#ff8fd8}@property --p{syntax:"<color>";inherits:true;initial-value:#ff3fa4}
+:root{--g:#ff8fd8;--p:#ff3fa4;--k:#ff4f6a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{transition:--g 1.2s,--p 1.2s}body.thinking{--g:#bdbdbd;--p:#6b6b6b}body.angry{--g:#ff3b4a;--p:#ff0f3f}
+html,body{height:100%;margin:0;background:#000;color:#ffeaf7;font-family:Syne,system-ui,sans-serif;overflow:hidden}
+#cv{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+#logo{position:fixed;z-index:2;background:none;border:0;cursor:pointer;transition:opacity .8s}
+#hint{position:fixed;left:0;right:0;z-index:1;text-align:center;font:300 11px Unbounded,sans-serif;letter-spacing:9px;color:#5fc9d6;animation:br 4s ease-in-out infinite;transition:opacity .8s;pointer-events:none}
+@keyframes br{50%{opacity:.2}}
+body.open #hint,body.open #logo{opacity:0;pointer-events:none}
+#win{position:fixed;z-index:3;display:flex;flex-direction:column;padding:30px 30px 22px;opacity:0;filter:blur(14px);pointer-events:none;transition:opacity .5s,filter .5s}
+body.open #win{opacity:1;filter:blur(0);pointer-events:auto;transition:opacity 1.6s 1s,filter 1.6s 1s}
+header{display:flex;align-items:center;gap:14px;padding-bottom:12px}
+.orb{width:26px;height:26px;border-radius:50%;background:conic-gradient(from 0deg,var(--g),var(--p),var(--g),var(--p),var(--g));-webkit-mask:radial-gradient(circle,transparent 8px,#000 9px);mask:radial-gradient(circle,transparent 8px,#000 9px);animation:sp 6s linear infinite,pu 4s ease-in-out infinite;filter:drop-shadow(0 0 8px var(--g))}
+.orb.th{animation:sp 1.4s linear infinite,pu 1s ease-in-out infinite;filter:grayscale(1) brightness(1.5) drop-shadow(0 0 10px #fff)}
+@keyframes sp{to{transform:rotate(360deg)}}@keyframes pu{50%{scale:1.25}}
+header b{font:500 17px Unbounded,sans-serif;letter-spacing:5px;background:linear-gradient(90deg,var(--g),var(--p),var(--g));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:fl 8s linear infinite}
+@keyframes fl{to{background-position:-300% 0}}
+header small{display:block;font-size:10px;letter-spacing:3px;color:#6a7a93;margin-top:3px}
+header button{margin-left:auto;background:none;border:0;color:#7b8aa5;font-size:24px;cursor:pointer;transition:.4s}header button:hover{color:#fff;transform:rotate(90deg)}
+.lang{margin-left:auto;display:flex;gap:2px}.lang button{margin-left:0;font:300 10px Unbounded,sans-serif;letter-spacing:1px;padding:6px 8px;border:1px solid transparent;border-radius:20px;color:#8d7a96;font-size:10px}.lang button.on{color:#fff;border-color:var(--g);text-shadow:0 0 10px var(--g)}#x{margin-left:6px}
+#msgs{flex:1;overflow-y:auto;padding:14px 2px;display:flex;flex-direction:column;gap:20px;scrollbar-width:none;-webkit-mask-image:linear-gradient(transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(transparent,#000 6%,#000 94%,transparent)}
+.m{max-width:92%;line-height:1.65;font-size:15px;letter-spacing:.2px;animation:in 1.2s cubic-bezier(.2,.8,.2,1);white-space:pre-wrap;word-wrap:break-word}
+@keyframes in{from{opacity:0;transform:translateY(20px);filter:blur(10px);letter-spacing:6px}}
+.u{align-self:flex-end;text-align:right;color:#ffc6e8;font-style:italic}
+.a{align-self:flex-start;padding-left:14px;border-left:1px solid;border-image:linear-gradient(var(--g),var(--p),transparent) 1}
+.a.rude{border-image:linear-gradient(#ff4f6a,#ffb36b,transparent) 1;color:#ffd6dc}
+.w{display:inline-block;opacity:0;filter:blur(9px);transform:translateY(10px);text-shadow:0 0 18px var(--g);transition:opacity 1.1s,filter 1.1s,transform 1.1s,text-shadow 2s}
+.w.on{opacity:1;filter:blur(0);transform:none;text-shadow:0 0 0 transparent}
+.think{background:linear-gradient(90deg,#4a4a4a 20%,#e6e6e6 50%,#4a4a4a 80%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 1.6s linear infinite,in 1s;font-style:italic;border:0!important;padding:0!important}
+@keyframes sh{to{background-position:-200% 0}}
+#faq{display:none;flex-direction:column;gap:2px;max-height:38%;overflow-y:auto;padding:8px 0;scrollbar-width:none}
+#faq.show{display:flex}
+#faq button{text-align:left;background:none;border:0;color:#ffd0ee;padding:9px 4px;font:400 14px Syne,sans-serif;cursor:pointer;opacity:0;transform:translateX(-20px);filter:blur(6px);transition:all .9s cubic-bezier(.2,.8,.2,1)}
+#faq.show button{opacity:1;transform:none;filter:none}
+#faq button::before{content:"◦ ";color:var(--p)}#faq button:hover{color:#fff;letter-spacing:1.5px;text-shadow:0 0 14px var(--g)}
+.bar{display:flex;gap:12px;align-items:flex-end;padding-top:10px}
+.bar input{flex:1;min-width:0;background:none;border:0;border-bottom:1px solid rgba(255,255,255,.18);color:#fff;padding:10px 2px;font:400 16px Syne,sans-serif;outline:0;transition:.6s;border-image:linear-gradient(90deg,#333,#333) 1}
+.bar input:focus{border-image:linear-gradient(90deg,var(--g),var(--p),#ff7ad9) 1;box-shadow:0 10px 18px -12px var(--g)}
+.bar button{background:none;border:1px solid rgba(255,255,255,.2);border-radius:30px;color:#dff;cursor:pointer;transition:.5s;font:300 11px Unbounded,sans-serif;padding:9px 12px}
+.bar button:hover{border-color:var(--g);box-shadow:0 0 18px color-mix(in srgb,var(--g) 40%,transparent)}
+#send{font-size:16px;padding:7px 14px}
+</style></head><body>
+<canvas id="cv"></canvas>
+<button id="logo" aria-label="APE2601"></button>
+<div id="win">
+<header><div class="orb" id="orb"></div><div><b>Dias.AI</b><small id="sub">СОН · НА СВЯЗИ</small></div><div class="lang"><button id="lr" class="on">RU</button><button id="lk">ҚАЗ</button></div><button id="x">×</button></header>
+<div id="msgs"></div>
+<div id="faq"></div>
+<div class="bar"><button id="fb">Частые вопросы Ильяса</button><input id="in" placeholder="шепни что-нибудь…" autocomplete="off"><button id="send">→</button></div>
+</div>
+<script>
+// ===== РАСПИСАНИЕ =====
+const DN=["воскресенье","понедельник","вторник","среда","четверг","пятница","суббота"];
+const SCH={
+1:[["Возрастная анатомия и физиология","11:00","11:50","ауд. 231","практика"],["История физической культуры и спорта","12:00","12:50","ауд. 231","практика"],["Русский язык","13:10","14:00","ауд. 330","практика"],["Русский язык","14:10","15:00","ауд. 330","практика"]],
+2:[["Возрастная анатомия и физиология","09:00","09:50","ауд. 350, блок А06","лекция"],["Возрастная анатомия и физиология","10:00","10:50","ауд. 350, блок А06","лекция"],["Основы экономики и т.д.","17:10","18:00","онлайн","лекция"]],
+3:[["Введение в педагогическую профессию","12:00","12:50","ауд. 349, блок А06","лекция"],["Введение в педагогическую профессию","13:10","14:00","ауд. 349, блок А06","лекция"],["Введение в педагогическую профессию","14:10","15:00","ауд. 216","практика"],["Физическая культура","16:10","18:00","многофункциональный зал, 3 этаж","физра"]],
+4:[["История Казахстана","11:00","11:50","ауд. 317","практика"],["Английский язык","12:00","12:50","ауд. 317","практика"],["Английский язык","13:10","14:00","ауд. 317","практика"]],
+5:[["Основы экономики и т.д.","10:00","10:50","ауд. 330","практика"],["История физической культуры","11:00","11:50","ауд. 349, блок А06","лекция"],["История физической культуры","12:00","12:50","ауд. 349, блок А06","лекция"]]};
+const hasPE=d=>d===3,PEI="16:10–18:00, многофункциональный зал, 3 этаж";
+const line=(p,i)=>`${i+1}. ${p[0]} — ${p[1]}–${p[2]}, ${p[3]}, ${p[4]}`;
+const mins=s=>{const[a,b]=s.split(":");return +a*60+ +b};
+const day=o=>(new Date().getDay()+o)%7;
+const list=(d,who)=>SCH[d]?`Расписание на ${who} (${DN[d]}):\n`+SCH[d].map(line).join("\n"):`На ${who} (${DN[d]}) пар нет 😴`;
+const ANS=[
+ ()=>hasPE(day(1))?`Да, завтра физкультура будет 💪\n${PEI}. Бери форму! 🏃‍♂️`:`Нет, завтра физры нет ❌ Она только по средам: ${PEI}.`,
+ ()=>hasPE(day(0))?`Да, сегодня физкультура будет 💪\n${PEI}. 🏃‍♂️`:`Нет, сегодня физры нет ❌ Она только по средам: ${PEI}.`,
+ ()=>{const s=SCH[day(0)];if(!s)return"Сегодня выходной, пар нет 😴";const n=new Date(),t=n.getHours()*60+n.getMinutes();
+  for(let i=0;i<s.length;i++){const p=s[i];if(t>=mins(p[1])&&t<mins(p[2]))return`Сейчас идёт: ${p[0]} 📚\nДо ${p[2]}, ${p[3]}, ${p[4]}.`;
+   if(t<mins(p[1]))return i?`Сейчас перемена ☕ Следующая:\n${line(p,i)}`:`Пары ещё не начались ⏳ Первая:\n${line(p,0)}`}
+  return"На сегодня пары закончились 🎉 Отдыхай!"},
+ ()=>"Домашку в расписании я не вижу 📝 Её нет в моих данных — глянь чат группы или спроси старосту.",
+ ()=>hasPE(day(0))?"Официальной отмены сегодняшней физры я не вижу ✅ Идёт по расписанию, 16:10–18:00 💪":"Отменять нечего — сегодня физры и так нет 😄 Она по средам.",
+ ()=>hasPE(day(1))?"Об отмене завтрашней физры информации нет 🤞 Идёт по расписанию, 16:10–18:00.":"Завтра физры и так нет, отменять нечего 😄 Она по средам.",
+ ()=>list(day(0),"сегодня"),()=>list(day(1),"завтра")];
+const FAQ=["Завтра будет Физкультура?","Сегодня будет Физкультура?","Сейчас какая пара?","Что дали на домашнее задание?","Сегодня отменили Физкультуру?","Завтра отменят физкультуру?"];
+const RUDE=["Ты это уже спрашивал, Ильяс! Читай выше 🙄","Опять?! Другими словами — тот же вопрос 😤","Ильяс, мозги включи. Повторяю:","Сколько можно?! Ещё раз для особо одарённых 😒","Ты издеваешься? 🤦‍♂️ Ответ тот же:"];
+const UNK=["Хм, не понял 🤔 Спроси про физру, пару, домашку или расписание.","Этого я не знаю 😅 Нажми «Частые вопросы Ильяса»!"];
+function intent(t){t=t.toLowerCase().replace(/ё/g,"е");
+ const ph=/физ|спорт/.test(t),c=/отмен|не будет/.test(t),tm=/завтр/.test(t);
+ if(ph&&c)return tm?5:4;if(ph&&tm)return 0;if(ph)return 1;
+ if(/расписан/.test(t))return tm?7:6;
+ if(/пар[аыуе]|урок|лекци/.test(t)&&/сейчас|щас|какая|какой|что/.test(t))return 2;
+ if(/домаш|дз|задал|задан|дали/.test(t))return 3;return-1}
+// ===== ЯЗЫК: русский / қазақша =====
+let LANG="ru";
+const UI={
+ ru:{ph:"шепни что-нибудь…",fb:"Частые вопросы Ильяса",sub:"СОН · НА СВЯЗИ",th:"Dias.AI думает…",
+  gr:"Привет… Я Dias.AI 🌌✨\nСпрашивай про физру, пары, домашку и расписание. Или открой «Частые вопросы Ильяса» 👇",sw:"Язык: русский 🇷🇺 Продолжаем!"},
+ kk:{ph:"бірдеңе сыбырла…",fb:"Ильястың жиі сұрақтары",sub:"ТҮС · БАЙЛАНЫСТА",th:"Dias.AI ойланып жатыр…",
+  gr:"Сәлем… Мен Dias.AI 🌌✨\nДене шынықтыру, сабақ, үй тапсырмасы және кесте туралы сұра. Немесе «Ильястың жиі сұрақтары» түймесін аш 👇",sw:"Тіл: қазақша 🇰🇿 Жалғастырайық!"}};
+const FAQ_KK=["Ертең дене шынықтыру болады ма?","Бүгін дене шынықтыру болады ма?","Қазір қандай сабақ?","Үйге не берді?","Бүгін дене шынықтыру бекер болды ма?","Ертең дене шынықтыру бекер болады ма?"];
+const DK=["жексенбі","дүйсенбі","сейсенбі","сәрсенбі","бейсенбі","жұма","сенбі"];
+const SK={"Возрастная анатомия и физиология":"Жас ерекшелік анатомиясы және физиологиясы","История физической культуры и спорта":"Дене шынықтыру және спорт тарихы","Русский язык":"Орыс тілі","Основы экономики и т.д.":"Экономика негіздері т.б.","Введение в педагогическую профессию":"Педагогикалық кәсіпке кіріспе","Физическая культура":"Дене шынықтыру","История Казахстана":"Қазақстан тарихы","Английский язык":"Ағылшын тілі","История физической культуры":"Дене шынықтыру тарихы"};
+const TK={"практика":"практика","лекция":"дәріс","физра":"дене шынықтыру"};
+const rk=r=>r.replace(/ауд\. (\d+)/,"$1 аудитория").replace("блок А06","А06 блогы").replace("многофункциональный зал, 3 этаж","көпфункционалды зал, 3-қабат");
+const lineK=(p,i)=>`${i+1}. ${SK[p[0]]||p[0]} — ${p[1]}–${p[2]}, ${rk(p[3])}, ${TK[p[4]]||p[4]}`;
+const listK=(d,a,b)=>SCH[d]?`${a} сабақ кестесі (${DK[d]}):\n`+SCH[d].map(lineK).join("\n"):`${b} (${DK[d]}) сабақ жоқ 😴`;
+const PEK="16:10–18:00, көпфункционалды зал, 3-қабат";
+const nowMin=()=>{const n=new Date();return n.getHours()*60+n.getMinutes()};
+// отмена физры: сообщают только в среду, до начала физкультуры
+function cancelA(kk){const d=day(0),before=nowMin()<mins("16:10");
+ if(d===3)return before
+  ?(kk?"Бас тарту туралы тек дене шынықтыру алдында ғана айтады — бүгін, сәрсенбіде, 16:10-ға дейін. Ертерек айтпайды ⏳ Күте тұр, топ чатын қарап отыр.":"Об отмене скажут только перед самой физрой — сегодня, в среду, до 16:10. Раньше не скажут ⏳ Жди и смотри чат группы.")
+  :(kk?"Дене шынықтыру 16:10-да басталады — бас тарту тек басталмай тұрып айтылады. Топ чатын тексер 📲":"Физра в 16:10 — об отмене говорят только до начала. Проверь чат группы 📲");
+ return kk?"Бас тарту туралы тек сәрсенбіде, дене шынықтыру алдында (16:10-ға дейін) айтады. Ертерек айтпайды, сондықтан қазір жауап жоқ 🤷":"Об отмене скажут только в среду — перед самой физрой, до 16:10. Раньше не скажут, так что сейчас ответа нет 🤷"}
+ANS[4]=ANS[5]=()=>cancelA(false);
+const ANS_KK=[
+ ()=>hasPE(day(1))?`Иә, ертең дене шынықтыру болады 💪\n${PEK}. Формаңды ал! 🏃‍♂️`:`Жоқ, ертең дене шынықтыру жоқ ❌ Ол тек сәрсенбіде: ${PEK}.`,
+ ()=>hasPE(day(0))?`Иә, бүгін дене шынықтыру болады 💪\n${PEK}. 🏃‍♂️`:`Жоқ, бүгін дене шынықтыру жоқ ❌ Ол тек сәрсенбіде: ${PEK}.`,
+ ()=>{const s=SCH[day(0)];if(!s)return"Бүгін демалыс, сабақ жоқ 😴";const t=nowMin();
+  for(let i=0;i<s.length;i++){const p=s[i];if(t>=mins(p[1])&&t<mins(p[2]))return`Қазір жүріп жатыр: ${SK[p[0]]||p[0]} 📚\n${p[2]}-ге дейін, ${rk(p[3])}, ${TK[p[4]]||p[4]}.`;
+   if(t<mins(p[1]))return i?`Қазір үзіліс ☕ Келесі:\n${lineK(p,i)}`:`Сабақ әлі басталған жоқ ⏳ Бірінші:\n${lineK(p,0)}`}
+  return"Бүгінгі сабақ біткен 🎉 Демал!"},
+ ()=>"Үй тапсырмасын мен көрмеймін 📝 Менің деректерімде жоқ — топ чатын қара немесе старостадан сұра.",
+ ()=>cancelA(true),()=>cancelA(true),
+ ()=>listK(day(0),"Бүгінгі","Бүгін"),()=>listK(day(1),"Ертеңгі","Ертең")];
+// грубее: порядок = нарастание
+RUDE.length=0;RUDE.push("Ильяс, ты это уже спрашивал! Читать не умеешь? 🙄","Опять то же самое?! Другими словами — тот же вопрос, бестолочь 😤","Ты тупой или прикидываешься? Я ТЕБЕ УЖЕ ОТВЕТИЛ! 😡 Повторяю:","Ты как попугай, одно и то же долбишь! Хватит уже! 😠","Я с тобой скоро говорить перестану, тормоз! Последний раз повторяю: 😡");
+const RUDE_KK=["Ильяс, мұны сен бұрын сұрадың ғой! Оқи алмайсың ба? 🙄","Тағы да сол?! Басқа сөзбен айтсаң да сұрақ сол, ақымақ 😤","Сен ақымақсың ба әлде кейіп танытасың ба? Мен саған жауап бердім ғой! 😡 Тағы айтамын:","Тотықұс сияқты бір нәрсені қайталай бересің! Тоқтат енді! 😠","Болды, Ильяс, мені әбден жалықтырдың! Миыңды қос! Соңғы рет айтамын: 😡"];
+const RUDE_UNK_RU=["Ты это уже писал, тормоз! Придумай что-то новое 🙄","Опять то же самое?! Мозги включи 😠"];
+const RUDE_UNK_KK=["Мұны сен бұрын жаздың, ақымақ! Жаңа бірдеңе ойлап тап 🙄","Тағы сол ма?! Миыңды қос 😠"];
+const UNK_KK=["Хм, түсінбедім 🤔 Дене шынықтыру, сабақ, үй тапсырмасы немесе кесте туралы сұра.","Мұны білмеймін 😅 «Ильястың жиі сұрақтары» түймесін бас!"];
+function kkI(t){t=t.toLowerCase();const ph=/дене|физ|спорт/.test(t),c=/бекер|жойыл|болмай|бас тарт|тоқтат|бекіт/.test(t),tm=/ертең/.test(t);
+ if(ph&&c)return tm?5:4;if(ph&&tm)return 0;if(ph)return 1;
+ if(/кесте/.test(t))return tm?7:6;
+ if(/сабақ|пән|пара/.test(t)&&/қазір|қандай|қай/.test(t))return 2;
+ if(/үй\s?тап|үйге|тапсырма|берді/.test(t))return 3;return-1}
+const _i=intent;intent=function(t){const r=_i(t);return r>=0?r:kkI(t)};
+function renderFaq(){const f=document.getElementById("faq");f.innerHTML="";(LANG==="kk"?FAQ_KK:FAQ).forEach((q,i)=>{const b=document.createElement("button");b.textContent=q;b.style.transitionDelay=i*90+"ms";b.onclick=()=>ask(q);f.appendChild(b)})}
+function setLang(l){if(l===LANG)return;LANG=l;const g=id=>document.getElementById(id);
+ g("lr").classList.toggle("on",l==="ru");g("lk").classList.toggle("on",l==="kk");
+ g("in").placeholder=UI[l].ph;g("fb").textContent=UI[l].fb;g("sub").textContent=UI[l].sub;document.documentElement.lang=l;renderFaq();
+ if(g("msgs").children.length){S.got();reveal(add("","a"),UI[l].sw)}}
+document.getElementById("lr").onclick=()=>setLang("ru");
+document.getElementById("lk").onclick=()=>setLang("kk");
+// ===== РАЗНЫЕ ОТВЕТЫ (случайные, как живой чат) =====
+const pk=a=>a[Math.floor(Math.random()*a.length)];
+const lastV={};
+function pkNo(k,a){let i;do{i=Math.floor(Math.random()*a.length)}while(a.length>1&&i===lastV[k]);lastV[k]=i;return a[i]}
+function peA(o,kk){const yes=hasPE(day(o)),I=kk?PEK:PEI,w=kk?(o?"ертең":"бүгін"):(o?"завтра":"сегодня"),C=w[0].toUpperCase()+w.slice(1);
+ const V=kk?(yes?[`Иә, ${w} дене шынықтыру болады 💪\n${I}. Формаңды ал! 🏃‍♂️`,`Болады! ${C} дене шынықтыру бар 🔥 ${I}. Формаңды ұмытпа 👟`,`Иә-иә, ${w} дене шынықтыру кесте бойынша бар ✅ ${I}.`,`${C} — иә, дене шынықтыру бар 🏃‍♂️\n${I}.`]
+  :[`Жоқ, ${w} дене шынықтыру жоқ ❌ Ол тек сәрсенбіде: ${I}.`,`${C} дене шынықтыру жоқ 🙅 Сәрсенбіні күтеміз: ${I}.`,`Жоқ-ә, ${w} дене шынықтырусыз 😎 Ол сәрсенбіде — ${I}.`,`${C} дене шынықтыру болмайды ❌ Тек сәрсенбіде, ${I}.`])
+ :(yes?[`Да, ${w} физкультура будет 💪\n${I}. Бери форму! 🏃‍♂️`,`Будет! ${C} физра 🔥 ${I}. Не забудь форму 👟`,`Угу, ${w} физра есть по расписанию ✅ ${I}.`,`${C} — да, физкультура будет 🏃‍♂️\n${I}.`]
+  :[`Нет, ${w} физры нет ❌ Она только по средам: ${I}.`,`${C} физкультуры нет 🙅 Ждём среду: ${I}.`,`Не-а, ${w} без физры 😎 Она по средам — ${I}.`,`Физры ${w} не будет ❌ Только в среду, ${I}.`]);
+ return pkNo("pe"+kk+yes,V)}
+const HW_RU=["Домашку в расписании я не вижу 📝 Её нет в моих данных — глянь чат группы или спроси старосту.","Про домашку ничего не знаю 🤷 Загляни в чат группы или спроси старосту.","Задания у меня в данных нет 📝 Староста или чат группы тебе помогут.","Домашку не вижу, Ильяс 👀 Проверь чат группы!"];
+const HW_KK=["Үй тапсырмасын мен көрмеймін 📝 Менің деректерімде жоқ — топ чатын қара немесе старостадан сұра.","Үй тапсырмасы туралы ештеңе білмеймін 🤷 Топ чатын қара немесе старостадан сұра.","Тапсырма менің деректерімде жоқ 📝 Староста немесе топ чаты көмектеседі.","Үй тапсырмасын көрмеймін, Ильяс 👀 Топ чатын тексер!"];
+const LD_RU=["","","Секунду… 🔍\n","Проверил расписание 📋\n","Так-так…\n","Ильяс, слушай 👂\n","Отвечаю: ","Ну смотри: "];
+const TL_RU=["","","","\nЕсли что — пиши ещё 😉","\nХорошего дня ✨","\nНе проспи! ⏰","\nСпрашивай ещё 🌌"];
+const LD_KK=["","","Бір сәт… 🔍\n","Кестені тексердім 📋\n","Қане…\n","Ильяс, тыңда 👂\n","Жауап беремін: ","Қара: "];
+const TL_KK=["","","","\nҚажет болса — тағы жаз 😉","\nКүнің сәтті болсын ✨","\nҰйықтап қалма! ⏰","\nТағы сұра 🌌"];
+function answer(i,plain){const kk=LANG==="kk";let core;
+ if(i===0||i===1)core=peA(1-i,kk);else if(i===3)core=pkNo("hw"+kk,kk?HW_KK:HW_RU);else core=(kk?ANS_KK:ANS)[i]();
+ if(plain)return core;return pkNo("l"+kk,kk?LD_KK:LD_RU)+core+pkNo("t"+kk,kk?TL_KK:TL_RU)}
+UNK.push("Эм… не уловил 🤷 Спроси про физру, пару, домашку или расписание.","Не понимаю, о чём ты 🌀 Попробуй «Частые вопросы Ильяса».");
+UNK_KK.push("Ым… түсінбедім 🤷 Дене шынықтыру, сабақ, үй тапсырмасы туралы сұра.","Не айтқың келгенін түсінбедім 🌀 «Ильястың жиі сұрақтары» түймесін бас.");
+RUDE_UNK_RU.push("Ты это уже писал! Фантазия закончилась? 😒");RUDE_UNK_KK.push("Мұны сен бұрын жаздың! Қиялың таусылды ма? 😒");
+
+// ===== ЗВУК: тихий, мечтательный, с эхом =====
+let ac,bus;
+function A(){if(!ac){try{ac=new(window.AudioContext||window.webkitAudioContext)();
+  const m=ac.createGain();m.gain.value=.7;const lp=ac.createBiquadFilter();lp.type="lowpass";lp.frequency.value=2600;
+  const d=ac.createDelay(1);d.delayTime.value=.42;const fb=ac.createGain();fb.gain.value=.45;const dl=ac.createBiquadFilter();dl.type="lowpass";dl.frequency.value=1500;
+  const d2=ac.createDelay(1);d2.delayTime.value=.67;const fb2=ac.createGain();fb2.gain.value=.35;
+  m.connect(lp);lp.connect(ac.destination);lp.connect(d);d.connect(dl);dl.connect(fb);fb.connect(d);dl.connect(ac.destination);
+  lp.connect(d2);d2.connect(fb2);fb2.connect(d2);d2.connect(ac.destination);bus=m}catch(e){}}
+ if(ac&&ac.state==="suspended")ac.resume();return ac}
+function tn(f,t,d,o={}){const c=A();if(!c)return;const n=c.currentTime+t,os=c.createOscillator(),g=c.createGain();
+ os.type=o.type||"sine";os.frequency.setValueAtTime(f,n);if(o.f2)os.frequency.linearRampToValueAtTime(o.f2,n+d);
+ const a=o.a||.02,v=o.v||.02;g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(v,n+a);g.gain.exponentialRampToValueAtTime(.0001,n+d);
+ if(o.det){const o2=c.createOscillator();o2.type="sine";o2.frequency.value=f*(1+o.det);o2.connect(g);o2.start(n);o2.stop(n+d+.1)}
+ os.connect(g).connect(bus);os.start(n);os.stop(n+d+.1)}
+const PENT=[523.25,587.33,659.25,783.99,880,1046.5,1174.7];
+const S={
+ open(){[146.8,220,293.7,369.99,440,554.4,659.25].forEach((f,i)=>tn(f,i*.22,4.5,{a:1.4,v:.016,det:.004}))},
+ send(){tn(440,0,.5,{a:.03,v:.014,f2:660})},
+ tick(){tn(PENT[Math.floor(Math.random()*PENT.length)],0,1.1,{a:.008,v:.009,det:.002})},
+ think(){tn(196,0,1.6,{a:.7,v:.014,det:.006});tn(293.7,.15,1.5,{a:.7,v:.01})},
+ got(){tn(880,0,1.8,{a:.02,v:.014,det:.003});tn(1318.5,.18,2,{a:.02,v:.01})},
+ rude(){tn(174.6,0,2.2,{a:.5,v:.022,det:.012});tn(185,.05,2.2,{a:.5,v:.018})},
+ close(){[659.25,440,293.7].forEach((f,i)=>tn(f,i*.25,2.6,{a:.3,v:.013,f2:f*.8}))}};
+// ===== ЧАСТИЦЫ =====
+const cv=document.getElementById("cv"),g2=cv.getContext("2d"),$=id=>document.getElementById(id);
+let W,H,P=[],mode="logo",mx=-999,my=-999,T=0,R={},ripple=0,heat=0,think=0,thS=0;const N=2200,NP=1500;
+function setRect(){const w=Math.min(W-20,520),h=Math.min(H*.86,720);R={x:(W-w)/2,y:(H-h)/2,w,h,r:Math.min(44,w/6)};
+ const s=$("win").style;s.left=R.x+"px";s.top=R.y+"px";s.width=w+"px";s.height=h+"px"}
+function rr(u){const{x,y,w,h,r}=R,a=w-2*r,b=h-2*r,q=Math.PI*r/2,L=2*a+2*b+4*q;let s=u*L;
+ if(s<a)return[x+r+s,y,0,-1];s-=a;
+ if(s<q){const t=s/r-Math.PI/2;return[x+w-r+Math.cos(t)*r,y+r+Math.sin(t)*r,Math.cos(t),Math.sin(t)]}s-=q;
+ if(s<b)return[x+w,y+r+s,1,0];s-=b;
+ if(s<q){const t=s/r;return[x+w-r+Math.cos(t)*r,y+h-r+Math.sin(t)*r,Math.cos(t),Math.sin(t)]}s-=q;
+ if(s<a)return[x+w-r-s,y+h,0,1];s-=a;
+ if(s<q){const t=s/r+Math.PI/2;return[x+r+Math.cos(t)*r,y+h-r+Math.sin(t)*r,Math.cos(t),Math.sin(t)]}s-=q;
+ if(s<b)return[x,y+h-r-s,-1,0];s-=b;
+ const t=s/r+Math.PI;return[x+r+Math.cos(t)*r,y+r+Math.sin(t)*r,Math.cos(t),Math.sin(t)]}
+function build(){W=cv.width=innerWidth;H=cv.height=innerHeight;setRect();
+ const o=document.createElement("canvas");o.width=W;o.height=H;const x=o.getContext("2d");
+ const fs=Math.min(W*.15,130);x.font=`800 ${fs}px Unbounded,system-ui,Arial`;x.textAlign="center";x.textBaseline="middle";x.fillStyle="#fff";x.fillText("APE2601",W/2,H/2);
+ const d=x.getImageData(0,0,W,H).data,pts=[];let x0=W,x1=0,y0=H,y1=0;
+ for(let y=0;y<H;y+=3)for(let q=0;q<W;q+=3)if(d[(y*W+q)*4+3]>128){pts.push([q,y]);if(q<x0)x0=q;if(q>x1)x1=q;if(y<y0)y0=y;if(y>y1)y1=y}
+ pts.sort(()=>Math.random()-.5);
+ const lg=$("logo").style;lg.left=x0-12+"px";lg.top=y0-12+"px";lg.width=x1-x0+24+"px";lg.height=y1-y0+24+"px";
+ const old=P;P=[];
+ for(let i=0;i<N;i++){const t=pts[i%pts.length]||[W/2,H/2],pr=old[i];
+  P.push({x:pr?pr.x:Math.random()*W,y:pr?pr.y:Math.random()*H,vx:0,vy:0,tx:t[0],ty:t[1],a:Math.random()*6.283,
+   u:i<NP?i/NP+Math.random()*.0006:0,off:(Math.random()-.5)*7,bx:Math.random(),by:Math.random(),s:Math.random()*1.5+.5,dust:i>=NP})}}
+build();
+if(document.fonts&&document.fonts.load)document.fonts.load("800 100px Unbounded").then(build).catch(()=>{});
+addEventListener("resize",build);
+addEventListener("pointermove",e=>{mx=e.clientX;my=e.clientY});addEventListener("pointerleave",()=>{mx=my=-999});
+function frame(){T+=.016;ripple*=.985;heat*=.99;
+ g2.globalCompositeOperation="source-over";g2.fillStyle="rgba(0,0,0,.26)";g2.fillRect(0,0,W,H);g2.globalCompositeOperation="lighter";
+ thS+=(think-thS)*.06;const th=thS;
+ for(const p of P){let tx,ty,k,al=.8,hue,lit=62;
+  if(mode==="logo"){tx=p.tx+Math.sin(T*1.6+p.a)*1.6;ty=p.ty+Math.cos(T*1.3+p.a*2)*1.6+Math.sin(p.tx*.025-T*2.5)*4;k=.055;hue=315+(p.tx/W)*30+Math.sin(T+p.a)*8}
+  else if(!p.dust){p.u=(p.u+.00005*(1+ripple*4))%1;const q=rr(p.u),wv=Math.sin(T*1.3+p.u*50)*2.5*(1+ripple*4)+Math.sin(T*.6+p.u*9)*4;
+   tx=q[0]+q[2]*(wv+p.off);ty=q[1]+q[3]*(wv+p.off);k=.06;const pulse=Math.pow(.5+.5*Math.sin((p.u*3-T*.25)*6.283),3);
+   al=.35+pulse*.65;hue=312+p.u*36+Math.sin(T*.5)*10;lit=55+pulse*30}
+  else{const{x,y,w,h}=R;tx=x+30+p.bx*(w-60)+Math.sin(T*.35+p.a)*18;ty=y+30+p.by*(h-60)+Math.cos(T*.28+p.a*1.7)*18;k=.02;al=.1+.12*Math.sin(T+p.a*3)**2;hue=310+p.bx*40}
+  hue+=heat*(360-hue)*.95;
+  const dx=p.x-mx,dy=p.y-my,dd=dx*dx+dy*dy;if(dd<12000){const f=(1-dd/12000)*5,m=Math.sqrt(dd)+1;p.vx+=dx/m*f;p.vy+=dy/m*f}
+  p.vx+=(tx-p.x)*k;p.vy+=(ty-p.y)*k;p.vx*=.87;p.vy*=.87;p.x+=p.vx;p.y+=p.vy;
+  const sp=Math.min(1,Math.hypot(p.vx,p.vy)/5);
+  g2.fillStyle=`hsla(${hue+sp*40},${100*(1-th*.95)}%,${lit+sp*20+th*20}%,${Math.min(1,al+sp*.3)})`;g2.fillRect(p.x,p.y,p.s,p.s)}
+ if(mx>0){const gr=g2.createRadialGradient(mx,my,0,mx,my,140);const ah=315+heat*45;gr.addColorStop(0,`hsla(${ah},${100*(1-thS)}%,60%,.12)`);gr.addColorStop(1,"transparent");g2.fillStyle=gr;g2.fillRect(mx-140,my-140,280,280)}
+ requestAnimationFrame(frame)}
+frame();
+// ===== ЧАТ =====
+const msgs=$("msgs"),asked={};
+function add(t,c){const d=document.createElement("div");d.className="m "+c;d.textContent=t;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d}
+function reveal(el,txt,cb){el.textContent="";const ws=txt.split(/(\s+)/);let i=0;
+ const step=()=>{if(i>=ws.length){cb&&cb();return}const w=ws[i++];if(/^\s+$/.test(w)){el.appendChild(document.createTextNode(w));step();return}
+  const s=document.createElement("span");s.className="w";s.textContent=w;el.appendChild(s);requestAnimationFrame(()=>requestAnimationFrame(()=>s.classList.add("on")));S.tick();ripple=Math.min(1,ripple+.08);msgs.scrollTop=msgs.scrollHeight;setTimeout(step,110)};step()}
+$("logo").onclick=()=>{A();S.open();for(const p of P){const dx=p.x-W/2,dy=p.y-H/2,m=Math.hypot(dx,dy)+1;p.vx+=dx/m*(10+Math.random()*14);p.vy+=dy/m*(10+Math.random()*14)}
+ mode="chat";document.body.classList.add("open");ripple=1;
+ if(!msgs.children.length)setTimeout(()=>{S.got();reveal(add("","a"),UI[LANG].gr)},2200)};
+$("x").onclick=()=>{S.close();document.body.classList.remove("open");mode="logo";$("faq").classList.remove("show")};
+renderFaq();
+$("fb").onclick=()=>{S.send();$("faq").classList.toggle("show")};
+$("send").onclick=()=>{const v=$("in").value.trim();if(v){$("in").value="";ask(v)}};
+$("in").onkeydown=e=>{if(e.key==="Enter")$("send").onclick()};
+function ask(text){A();S.send();$("faq").classList.remove("show");reveal(add("","u"),text);
+ const i=intent(text),key=i>=0?i:"u:"+text.toLowerCase().replace(/[^\p{L}\d]/gu,""),rep=asked[key]||0;asked[key]=rep+1;
+ const th=add(UI[LANG].th,"a think");$("orb").classList.add("th");document.body.classList.add("thinking");think=1;S.think();const iv=setInterval(S.think,1700);
+ setTimeout(()=>{clearInterval(iv);th.remove();$("orb").classList.remove("th");document.body.classList.remove("thinking");think=0;
+  let txt,rude=false;
+  if(i>=0){txt=answer(i,rep>0);if(rep){rude=true;const RR=LANG==="kk"?RUDE_KK:RUDE;txt=RR[(rep-1)%RR.length]+"\n"+txt}}
+  else if(rep){rude=true;txt=pk(LANG==="kk"?RUDE_UNK_KK:RUDE_UNK_RU)}else txt=pk(LANG==="kk"?UNK_KK:UNK);
+  const el=add("","a"+(rude?" rude":""));ripple=1;if(rude){S.rude();heat=1;document.body.classList.add("angry");setTimeout(()=>document.body.classList.remove("angry"),6000)}else S.got();reveal(el,txt)},1800+Math.random()*900)}
+</script></body></html>

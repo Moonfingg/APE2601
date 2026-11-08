@@ -1,0 +1,6 @@
+{
+  "name": "Fernhollow",
+  "description": "A regenerative design studio. Wander through a night valley of flowers that grows as you move.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
